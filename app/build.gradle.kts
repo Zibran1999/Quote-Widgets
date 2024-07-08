@@ -1,8 +1,10 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-//    alias(libs.plugins.hilt)
-//    kotlin("kapt")
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.ksp)
+
 
 }
 
@@ -25,8 +27,9 @@ android {
 
     buildTypes {
         debug {
-            isShrinkResources = true
-            isMinifyEnabled = true
+            isShrinkResources = false
+            isMinifyEnabled = false
+            isDebuggable = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -62,9 +65,6 @@ android {
     buildFeatures {
         compose = true
         buildConfig= true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
     }
     packaging {
         resources {
@@ -103,14 +103,16 @@ dependencies {
     //GSON
     implementation(libs.gson)
     // Dagger Hilt
-//    implementation(libs.dagger.hilt)
-//    implementation(libs.hilt.compiler)
-//    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.dagger.hilt)
+    ksp(libs.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.compose.runtime.livedata)
 
     // room db
-//    implementation(libs.androidx.room)
-//    implementation(libs.androidx.room.ktx)
-//    implementation(libs.androidx.room.compiler)
+    implementation(libs.androidx.room)
+    implementation(libs.androidx.room.ktx)
+    annotationProcessor(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
 
 
 }

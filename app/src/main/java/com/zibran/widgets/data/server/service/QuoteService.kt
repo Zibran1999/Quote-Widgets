@@ -11,6 +11,6 @@ interface QuoteService {
     @GET("quotes")
     suspend fun getRandomQuote(): Response<Quote>
 
-    @GET("quotes")
-    suspend fun getCategorizedQuote(@Query("category") category: Category): Response<Quote>
+    @GET("quotes/")
+    suspend fun getCategorizedQuote(@Query("category") category: String): Response<Quote>
 }
