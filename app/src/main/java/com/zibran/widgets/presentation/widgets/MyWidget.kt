@@ -1,6 +1,9 @@
 package com.zibran.widgets.presentation.widgets
 
 import android.content.Context
+import android.content.res.Configuration
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
@@ -41,6 +44,9 @@ import com.zibran.widgets.MainActivity
 import com.zibran.widgets.R
 import com.zibran.widgets.data.local.QuoteDatabase
 import com.zibran.widgets.ui.theme.SkyBlue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 object MyWidget : GlanceAppWidget() {
     val quote = stringPreferencesKey("quote")
@@ -49,25 +55,30 @@ object MyWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
 
         provideContent {
-            QuoteScreen()
+            QuoteScreen(context)
+            fetchRandomQuotePeriodically(context, id)
         }
     }
 
     @Composable
-    private fun QuoteScreen() {
+    private fun QuoteScreen(context: Context) {
         var quoteS = currentState(key = quote) ?: ""
 
         Box(
             modifier = GlanceModifier.fillMaxSize().background(GlanceTheme.colors.background)
                 .clickable(onClick = actionStartActivity<MainActivity>())
         ) {
+            val card = if (isSystemInDarkTheme(context = context)) {
+                R.drawable.card
+            } else R.drawable.card_day
             Column(
                 modifier = GlanceModifier.fillMaxSize()
                     .padding(start = 16.dp, end = 16.dp, top = 16.dp)
-                    .background(imageProvider = ImageProvider(R.drawable.card_day)),
+                    .background(imageProvider = ImageProvider(card)),
                 verticalAlignment = Alignment.Vertical.CenterVertically,
                 horizontalAlignment = Alignment.Horizontal.CenterHorizontally
             ) {
+
                 Log.d("LOG_TAG", quoteS)
                 val startQuote = "\u275D " // Unicode for left stylish quote
                 val endQuote = "\u275E" // Unicode for right stylish quote
@@ -93,7 +104,7 @@ object MyWidget : GlanceAppWidget() {
                     colorFilter = ColorFilter.tint(ColorProvider(SkyBlue)),
                     provider = ImageProvider(R.drawable.refresh_icon),
                     contentDescription = null,
-                    modifier = GlanceModifier.size(20.dp)
+                    modifier = GlanceModifier.size(25.dp)
                         .clickable(onClick = actionRunCallback<ObjectIncrementCallBack>())
                 )
 
@@ -120,4 +131,29 @@ class ObjectIncrementCallBack : ActionCallback {
         MyWidget.update(context, glanceId)
     }
 
+}
+
+fun isSystemInDarkTheme(context: Context): Boolean {
+    return context.resources.configuration.uiMode and
+            Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+}
+
+
+private fun fetchRandomQuotePeriodically(context: Context, glanceId: GlanceId) {
+    val handler = Handler(Looper.getMainLooper())
+    val runnable = object : Runnable {
+        override fun run() {
+            CoroutineScope(Dispatchers.IO).launch {
+                updateAppWidgetState(context, glanceId) { pref ->
+                    val database = QuoteDatabase.getDBInstance(context)
+                    val dao = database.getQuoteDao()
+                    pref[MyWidget.quote] = dao.getQuotes().random().quote
+                    println("Method Called, it's working")
+                }
+                MyWidget.update(context, glanceId)
+            }
+            handler.postDelayed(this, (60000 * 5)) // 60000ms = 1 minute
+        }
+    }
+    handler.post(runnable)
 }
