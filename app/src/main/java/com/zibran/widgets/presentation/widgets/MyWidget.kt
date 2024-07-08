@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
-import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.compose.ui.unit.sp
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.glance.ColorFilter
 import androidx.glance.GlanceId
@@ -30,6 +30,7 @@ import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.layout.size
+import androidx.glance.text.FontFamily
 import androidx.glance.text.FontStyle
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
@@ -52,23 +53,30 @@ object MyWidget : GlanceAppWidget() {
 
     @Composable
     private fun QuoteScreen() {
-        val quoteS = currentState(key = quote) ?: ""
+        var quoteS = currentState(key = quote) ?: ""
 
-        Box(modifier = GlanceModifier.fillMaxSize()) {
+        Box(
+            modifier = GlanceModifier.fillMaxSize().background(GlanceTheme.colors.background)
+        ) {
             Column(
                 modifier = GlanceModifier.fillMaxSize()
                     .padding(start = 16.dp, end = 16.dp, top = 16.dp)
-                    .background(GlanceTheme.colors.background),
+                    .background(imageProvider = ImageProvider(R.drawable.card_day)),
                 verticalAlignment = Alignment.Vertical.CenterVertically,
                 horizontalAlignment = Alignment.Horizontal.CenterHorizontally
             ) {
                 Log.d("LOG_TAG", quoteS)
-                val startQuote = "\u275D" // Unicode for left stylish quote
+                val startQuote = "\u275D " // Unicode for left stylish quote
                 val endQuote = "\u275E" // Unicode for right stylish quote
+                if (quoteS.isEmpty()) quoteS = "Why be normal, When you can be the best"
                 Text(
                     text = " $startQuote $quoteS $endQuote ",
-                    modifier = GlanceModifier.padding(10.dp),
-                    style = TextStyle(textAlign = TextAlign.Center, fontStyle = FontStyle.Italic)
+                    modifier = GlanceModifier.padding(10.dp), style = TextStyle(
+                        textAlign = TextAlign.Center,
+                        fontStyle = FontStyle.Italic,
+                        fontFamily = FontFamily.SansSerif,
+                        fontSize = 16.sp
+                    )
                 )
                 Spacer(modifier = GlanceModifier.height(16.dp))
 

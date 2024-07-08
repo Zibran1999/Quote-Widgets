@@ -9,9 +9,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.glance.appwidget.updateAll
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.zibran.widgets.presentation.widgets.MyWidget
 import com.zibran.widgets.presentation.widgets.WidgetViewModel
 import com.zibran.widgets.ui.theme.WidgetsTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,6 +26,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             WidgetsTheme {
+                LaunchedEffect(key1 = Unit) {
+                    MyWidget.updateAll(this@MainActivity)
+                }
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Greeting(
                         name = "Android",
