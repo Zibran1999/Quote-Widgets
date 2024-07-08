@@ -5,8 +5,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.zibran.widgets.data.local.dao.QuoteDao
+import com.zibran.widgets.data.local.entity.Quote
 import com.zibran.widgets.data.server.model.request.Category
 import com.zibran.widgets.data.server.repository.QuoteRepository
 import com.zibran.widgets.utils.constants.CategoryConstants
@@ -29,10 +32,14 @@ class WidgetViewModel @Inject constructor(
     AndroidViewModel(application = application) {
 
     var msg by mutableStateOf("")
+    private val quoteLiveDao = MutableLiveData<List<Quote>>()
+    val _quoteLiveDao: LiveData<List<Quote>>
+        get() = quoteLiveDao
 
 
     init {
         getCategoryWisedQuote()
+        getQuotes()
     }
 
     private fun getRandomQuote(dispatcher: CoroutineDispatcher = Dispatchers.IO) {
@@ -77,5 +84,12 @@ class WidgetViewModel @Inject constructor(
             }
         }
 
+    }
+
+    private fun getQuotes(dispatcher: CoroutineDispatcher = Dispatchers.IO) {
+        viewModelScope.launch(dispatcher) {
+            val quoteList = quoteDao.getQuotes()
+            quoteLiveDao.postValue(quoteList)
+        }
     }
 }

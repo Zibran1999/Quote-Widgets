@@ -13,6 +13,7 @@ import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.action.ActionParameters
+import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.action.ActionCallback
@@ -36,6 +37,7 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
+import com.zibran.widgets.MainActivity
 import com.zibran.widgets.R
 import com.zibran.widgets.data.local.QuoteDatabase
 import com.zibran.widgets.ui.theme.SkyBlue
@@ -57,6 +59,7 @@ object MyWidget : GlanceAppWidget() {
 
         Box(
             modifier = GlanceModifier.fillMaxSize().background(GlanceTheme.colors.background)
+                .clickable(onClick = actionStartActivity<MainActivity>())
         ) {
             Column(
                 modifier = GlanceModifier.fillMaxSize()
