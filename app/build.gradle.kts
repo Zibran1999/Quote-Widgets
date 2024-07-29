@@ -1,12 +1,21 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.hilt)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
-
-
 }
+
+fun loadProperties(envFileName: String): Properties {
+    val props = Properties()
+    file(envFileName).inputStream().use { props.load(it) }
+    return props
+}
+// Load properties based on the build type
+val debugProperties = loadProperties("../.env.debug")
+val releaseProperties = loadProperties("../.env.release")
 
 android {
     namespace = "com.zibran.widgets"
@@ -25,6 +34,15 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("../widgets.jks")
+            storePassword = "quote-widget"
+            keyAlias = "key0"
+            keyPassword = "quote-widget"
+        }
+    }
+
     buildTypes {
         debug {
             isShrinkResources = false
@@ -34,11 +52,13 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            val baseUrl: String = debugProperties.getProperty("DEBUG_BASE_URL")
             buildConfigField(
                 "String",
                 "BASE_URL",
-                "\"https://api.api-ninjas.com/v1/\""
+                "\"$baseUrl\""
             )
+            println("Debug: $baseUrl")
 
         }
         release {
@@ -48,11 +68,16 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            val baseUrl: String = releaseProperties.getProperty("RELEASE_BASE_URL")
+
             buildConfigField(
                 "String",
                 "BASE_URL",
-                "\"https://api.api-ninjas.com/v1/\""
+                "\"$baseUrl\""
             )
+            println("Release: $baseUrl")
+
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {

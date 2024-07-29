@@ -31,6 +31,7 @@ class WidgetViewModel @Inject constructor(
 ) :
     AndroidViewModel(application = application) {
 
+
     var msg by mutableStateOf("")
     private val quoteLiveDao = MutableLiveData<List<Quote>>()
     val _quoteLiveDao: LiveData<List<Quote>>

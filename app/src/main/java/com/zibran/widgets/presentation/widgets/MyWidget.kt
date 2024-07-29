@@ -52,9 +52,11 @@ object MyWidget : GlanceAppWidget() {
     val quote = stringPreferencesKey("quote")
 
 
+
     override suspend fun provideGlance(context: Context, id: GlanceId) {
 
         provideContent {
+
             QuoteScreen(context)
             fetchRandomQuotePeriodically(context, id)
         }
