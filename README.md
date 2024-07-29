@@ -1,6 +1,7 @@
 # Quote Widget App
 
 I have implemented Jetpack Glance to create a Quote Widget.
+PASSPHRASE:quote-widget
 
 ### Technology Used
 1. [Jetpack Glance](https://developer.android.com/develop/ui/compose/glance)
